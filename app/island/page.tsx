@@ -972,7 +972,7 @@ export default function IslandPage() {
           {/* Island Stats */}
           <div className="grid md:grid-cols-5 gap-4 mt-8">
             <Card className="bg-black/40 backdrop-blur-sm border-white/30">
-              <CardContent className="p-4 text-center">Name="p-4 text-center">
+              <CardContent className="p-4 text-center">
               <div className="text-2xl mb-2">🎨</div>
               <h3 className="text-white font-semibold text-sm">Animals</h3>
               <p className="text-xl font-bold text-yellow-400">
