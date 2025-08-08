@@ -10,7 +10,7 @@ export async function GET() {
   const realImgs = await getImages("real");
   const aiImgs = (
     await Promise.all(
-      ["super_easy","easy","plagiarized","difficult"].map(l => getImages(l))
+      ["supereasy","easy","plagiarized","difficult"].map(l => getImages(l))
     )
   ).flat();
   const pick = (arr: string[]) => arr[Math.floor(Math.random()*arr.length)];

@@ -124,7 +124,7 @@ export default function LearnPage() {
         {/* Title */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-2 font-serif">Master Van Gogh's Art</h1>
-          <p className="text-xl text-blue-200">Become an expert in recognizing authentic Van Gogh paintings</p>
+          <p className="text-xl text-blue-200">Explore and learn how to recognize authentic Van Gogh paintings—no tokens or points required!</p>
         </div>
 
         {/* Learning Tabs */}
@@ -167,7 +167,6 @@ export default function LearnPage() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4 text-sm text-gray-300">
                         <span>{lesson.duration}</span>
-                        <span>+{lesson.points} points</span>
                       </div>
                       <Button
                         onClick={() => completeLesson(lesson.id)}

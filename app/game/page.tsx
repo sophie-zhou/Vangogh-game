@@ -8,6 +8,8 @@ import { Progress } from "@/components/ui/progress"
 import { ArrowLeft, Timer, Star, Zap, Heart } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { supabase } from "@/lib/utils"
+import { useStats } from "@/lib/stats-context"
 
 interface GameQuestion {
   id: number
@@ -17,9 +19,11 @@ interface GameQuestion {
   points: number
   title: string
   year: string
+  realIsLeft: boolean
 }
 
 export default function GamePage() {
+  const { updateStats, addGameResult } = useStats()
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [score, setScore] = useState(0)
   const [lives, setLives] = useState(3)
@@ -28,37 +32,144 @@ export default function GamePage() {
   const [gameOver, setGameOver] = useState(false)
   const [selectedAnswer, setSelectedAnswer] = useState<"real" | "fake" | null>(null)
   const [showResult, setShowResult] = useState(false)
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null)
+  const [questions, setQuestions] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [correctAnswers, setCorrectAnswers] = useState(0)
+  const [totalAnswered, setTotalAnswered] = useState(0)
 
-  // Sample questions - replace with your actual Van Gogh dataset
-  const questions: GameQuestion[] = [
-    {
-      id: 1,
-      realImage: "/placeholder.svg?height=300&width=300",
-      fakeImage: "/placeholder.svg?height=300&width=300",
-      difficulty: "Easy",
-      points: 10,
-      title: "The Starry Night",
-      year: "1889",
-    },
-    {
-      id: 2,
-      realImage: "/placeholder.svg?height=300&width=300",
-      fakeImage: "/placeholder.svg?height=300&width=300",
-      difficulty: "Medium",
-      points: 20,
-      title: "Sunflowers",
-      year: "1888",
-    },
-    {
-      id: 3,
-      realImage: "/placeholder.svg?height=300&width=300",
-      fakeImage: "/placeholder.svg?height=300&width=300",
-      difficulty: "Hard",
-      points: 30,
-      title: "The Potato Eaters",
-      year: "1885",
-    },
-  ]
+  useEffect(() => {
+    async function fetchImages() {
+      setLoading(true)
+      console.log('🔄 Starting to fetch images...')
+      
+      try {
+      // Helper to get public URLs for a folder
+      const getPublicUrls = (folder: string, prefix: string, difficulty: string) => {
+        return window.fetch(`/paintings/${folder}/${prefix}/`).then(async () => {
+          // List files in the folder
+          // This is a hack: in production, you should have a manifest or use an API route
+          // Here, we hardcode the file count for demo, or you can fetch from Supabase if uploaded there
+          return [] // Placeholder, will fill below
+        })
+      }
+      // For demo, we will just use the Supabase storage API to list files
+      // Real
+      const { data: realData } = await supabase.storage.from('real').list('All of VanGogh', { limit: 1000 })
+      // Plagiarized
+      const { data: plagData } = await supabase.storage.from('plagiarized').list('Plagiarized', { limit: 1000 })
+      // Difficulty
+      const { data: supereasyData } = await supabase.storage.from('supereasy').list('Supereasy', { limit: 1000 })
+      const { data: easyData } = await supabase.storage.from('easy').list('Easy', { limit: 1000 })
+      const { data: difficultData } = await supabase.storage.from('difficult').list('Difficult', { limit: 1000 })
+      // Compose pairs
+      const pairs: any[] = []
+      
+      // Filter out non-image files
+      const filterImageFiles = (files: any[]) => {
+        return files.filter(file => 
+          file.name.toLowerCase().endsWith('.jpg') || 
+          file.name.toLowerCase().endsWith('.jpeg') || 
+          file.name.toLowerCase().endsWith('.png') ||
+          file.name.toLowerCase().endsWith('.gif') ||
+          file.name.toLowerCase().endsWith('.webp')
+        )
+      }
+      
+      const realImages = filterImageFiles(realData || [])
+      const plagImages = filterImageFiles(plagData || [])
+      const supereasyImages = filterImageFiles(supereasyData || [])
+      const easyImages = filterImageFiles(easyData || [])
+      const difficultImages = filterImageFiles(difficultData || [])
+      
+      console.log(`📸 Filtered images: Real=${realImages.length}, Plagiarized=${plagImages.length}, Supereasy=${supereasyImages.length}, Easy=${easyImages.length}, Difficult=${difficultImages.length}`)
+      
+      // Real vs Plagiarized
+      if (realImages.length > 0 && plagImages.length > 0) {
+        const minLen = Math.min(realImages.length, plagImages.length)
+        for (let i = 0; i < minLen; i++) {
+          pairs.push({
+            id: `real-plagiarized-${i}`,
+            realImage: supabase.storage.from('real').getPublicUrl(`All of VanGogh/${realImages[i].name}`).data.publicUrl,
+            fakeImage: supabase.storage.from('plagiarized').getPublicUrl(`Plagiarized/${plagImages[i].name}`).data.publicUrl,
+            difficulty: 'Plagiarized',
+            points: 10,
+            title: realImages[i].name,
+            year: '',
+            realIsLeft: Math.random() < 0.5, // Randomly assign real to left or right
+          })
+        }
+      }
+      // Real vs Super Easy
+      if (realImages.length > 0 && supereasyImages.length > 0) {
+        const minLen = Math.min(realImages.length, supereasyImages.length)
+        for (let i = 0; i < minLen; i++) {
+          pairs.push({
+            id: `real-super-easy-${i}`,
+            realImage: supabase.storage.from('real').getPublicUrl(`All of VanGogh/${realImages[i].name}`).data.publicUrl,
+            fakeImage: supabase.storage.from('supereasy').getPublicUrl(`Supereasy/${supereasyImages[i].name}`).data.publicUrl,
+            difficulty: 'Super Easy',
+            points: 10,
+            title: realImages[i].name,
+            year: '',
+            realIsLeft: Math.random() < 0.5, // Randomly assign real to left or right
+          })
+        }
+      }
+      // Real vs Easy
+      if (realImages.length > 0 && easyImages.length > 0) {
+        const minLen = Math.min(realImages.length, easyImages.length)
+        for (let i = 0; i < minLen; i++) {
+          pairs.push({
+            id: `real-easy-${i}`,
+            realImage: supabase.storage.from('real').getPublicUrl(`All of VanGogh/${realImages[i].name}`).data.publicUrl,
+            fakeImage: supabase.storage.from('easy').getPublicUrl(`Easy/${easyImages[i].name}`).data.publicUrl,
+            difficulty: 'Easy',
+            points: 10,
+            title: realImages[i].name,
+            year: '',
+            realIsLeft: Math.random() < 0.5, // Randomly assign real to left or right
+          })
+        }
+      }
+      // Real vs Difficult
+      if (realImages.length > 0 && difficultImages.length > 0) {
+        const minLen = Math.min(realImages.length, difficultImages.length)
+        for (let i = 0; i < minLen; i++) {
+          pairs.push({
+            id: `real-difficult-${i}`,
+            realImage: supabase.storage.from('real').getPublicUrl(`All of VanGogh/${realImages[i].name}`).data.publicUrl,
+            fakeImage: supabase.storage.from('difficult').getPublicUrl(`Difficult/${difficultImages[i].name}`).data.publicUrl,
+            difficulty: 'Difficult',
+            points: 10,
+            title: realImages[i].name,
+            year: '',
+            realIsLeft: Math.random() < 0.5, // Randomly assign real to left or right
+          })
+        }
+      }
+      console.log(`📊 Found ${pairs.length} image pairs`)
+      
+      // Shuffle pairs and take only 5 questions
+      for (let i = pairs.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        ;[pairs[i], pairs[j]] = [pairs[j], pairs[i]]
+      }
+      
+      // Take only first 5 questions
+      const gameQuestions = pairs.slice(0, 5)
+      setQuestions(gameQuestions)
+      setLoading(false)
+      console.log(`✅ Game ready with ${gameQuestions.length} questions`)
+      console.log('🎲 Question randomization:', gameQuestions.map(q => ({ id: q.id, realIsLeft: q.realIsLeft })))
+      
+    } catch (error) {
+      console.error('❌ Error fetching images:', error)
+      setLoading(false)
+    }
+    }
+    fetchImages()
+  }, [])
 
   const currentQ = questions[currentQuestion]
 
@@ -85,13 +196,18 @@ export default function GamePage() {
     setSelectedAnswer(choice === "left" ? "real" : "fake")
     setShowResult(true)
 
-    // Simulate correct answer logic (you'll implement actual logic)
-    const isCorrect = Math.random() > 0.5
+    // Determine if the answer is correct based on realIsLeft property
+    const correct = (choice === "left" && currentQ.realIsLeft) || (choice === "right" && !currentQ.realIsLeft)
+    setIsCorrect(correct)
+    setTotalAnswered(prev => prev + 1)
 
     setTimeout(() => {
-      if (isCorrect) {
-        setScore(score + currentQ.points + streak * 5)
+      if (correct) {
+        // Add base points (10) plus streak bonus (5 per streak)
+        const pointsEarned = currentQ.points + (streak * 5)
+        setScore(score + pointsEarned)
         setStreak(streak + 1)
+        setCorrectAnswers(prev => prev + 1)
       } else {
         setLives(lives - 1)
         setStreak(0)
@@ -110,7 +226,10 @@ export default function GamePage() {
       setTimeLeft(30)
       setSelectedAnswer(null)
       setShowResult(false)
+      setIsCorrect(null)
     } else {
+      // Game completed - update global stats
+      addGameResult(correctAnswers, totalAnswered, score)
       setGameOver(true)
     }
   }
@@ -124,6 +243,17 @@ export default function GamePage() {
     setGameOver(false)
     setSelectedAnswer(null)
     setShowResult(false)
+    setIsCorrect(null)
+    setCorrectAnswers(0)
+    setTotalAnswered(0)
+  }
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center text-white text-2xl">Loading images...</div>
+  }
+
+  if (!currentQ) {
+    return <div className="min-h-screen flex items-center justify-center text-white text-2xl">No more questions available.</div>
   }
 
   if (gameOver) {
@@ -135,8 +265,8 @@ export default function GamePage() {
             <h2 className="text-3xl font-bold text-white mb-4">Game Over!</h2>
             <div className="space-y-2 mb-6">
               <p className="text-xl text-yellow-400">Final Score: {score}</p>
-              <p className="text-lg text-blue-200">Best Streak: {streak}</p>
-              <p className="text-lg text-green-400">Questions Answered: {currentQuestion + 1}</p>
+              <p className="text-lg text-blue-200">Correct Answers: {correctAnswers}/{totalAnswered}</p>
+              <p className="text-lg text-green-400">Accuracy: {totalAnswered > 0 ? Math.round((correctAnswers / totalAnswered) * 100) : 0}%</p>
             </div>
             <div className="space-y-3">
               <Button onClick={resetGame} className="w-full bg-yellow-600 hover:bg-yellow-700">
@@ -217,6 +347,29 @@ export default function GamePage() {
           <p className="text-blue-200 text-lg">Look carefully at the brushstrokes, color palette, and artistic style</p>
         </div>
 
+        {/* Feedback Display */}
+        {showResult && isCorrect !== null && (
+          <div className="text-center mb-6">
+            <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-full text-lg font-bold ${
+              isCorrect 
+                ? 'bg-green-500/20 text-green-400 border border-green-400/50' 
+                : 'bg-red-500/20 text-red-400 border border-red-400/50'
+            }`}>
+              {isCorrect ? (
+                <>
+                  <span className="text-2xl">✅</span>
+                  <span>Correct! Well done!</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-2xl">❌</span>
+                  <span>Incorrect! Try again next time.</span>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Image Comparison */}
         <div className="grid md:grid-cols-2 gap-8 mb-8">
           <Card
@@ -228,7 +381,7 @@ export default function GamePage() {
             <CardContent className="p-4">
               <div className="relative mb-4">
                 <Image
-                  src={currentQ.realImage || "/placeholder.svg"}
+                  src={currentQ.realIsLeft ? currentQ.realImage : currentQ.fakeImage || "/placeholder.svg"}
                   alt="Option A"
                   width={400}
                   height={400}
@@ -237,6 +390,16 @@ export default function GamePage() {
                 {showResult && selectedAnswer === "real" && (
                   <div className="absolute inset-0 bg-green-500/20 rounded-lg flex items-center justify-center">
                     <Badge className="bg-green-600 text-white text-lg px-4 py-2">Your Choice</Badge>
+                  </div>
+                )}
+                {showResult && selectedAnswer === "fake" && (
+                  <div className="absolute inset-0 bg-red-500/20 rounded-lg flex items-center justify-center">
+                    <Badge className="bg-red-600 text-white text-lg px-4 py-2">Your Choice</Badge>
+                  </div>
+                )}
+                {showResult && !selectedAnswer && currentQ.realIsLeft && (
+                  <div className="absolute inset-0 bg-green-500/20 rounded-lg flex items-center justify-center">
+                    <Badge className="bg-green-600 text-white text-lg px-4 py-2">Correct Answer</Badge>
                   </div>
                 )}
               </div>
@@ -255,7 +418,7 @@ export default function GamePage() {
             <CardContent className="p-4">
               <div className="relative mb-4">
                 <Image
-                  src={currentQ.fakeImage || "/placeholder.svg"}
+                  src={currentQ.realIsLeft ? currentQ.fakeImage : currentQ.realImage || "/placeholder.svg"}
                   alt="Option B"
                   width={400}
                   height={400}
@@ -264,6 +427,16 @@ export default function GamePage() {
                 {showResult && selectedAnswer === "fake" && (
                   <div className="absolute inset-0 bg-green-500/20 rounded-lg flex items-center justify-center">
                     <Badge className="bg-green-600 text-white text-lg px-4 py-2">Your Choice</Badge>
+                  </div>
+                )}
+                {showResult && selectedAnswer === "real" && (
+                  <div className="absolute inset-0 bg-red-500/20 rounded-lg flex items-center justify-center">
+                    <Badge className="bg-red-600 text-white text-lg px-4 py-2">Your Choice</Badge>
+                  </div>
+                )}
+                {showResult && !selectedAnswer && !currentQ.realIsLeft && (
+                  <div className="absolute inset-0 bg-green-500/20 rounded-lg flex items-center justify-center">
+                    <Badge className="bg-green-600 text-white text-lg px-4 py-2">Correct Answer</Badge>
                   </div>
                 )}
               </div>
