@@ -124,7 +124,7 @@ export default function LearnPage() {
         {/* Title */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-2 font-serif">Master Van Gogh's Art</h1>
-          <p className="text-xl text-blue-200">Explore and learn how to recognize authentic Van Gogh paintings—no tokens or points required!</p>
+          <p className="text-xl text-blue-200">Explore and learn how to recognize authentic Van Gogh paintings—no points required!</p>
         </div>
 
         {/* Learning Tabs */}

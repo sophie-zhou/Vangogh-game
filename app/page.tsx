@@ -82,7 +82,7 @@ export default function HomePage() {
                 <h3 className="text-2xl font-bold text-white mb-2">Educate!</h3>
                 <p className="text-purple-200 mb-4">Learn how to spot real Van Gogh paintings</p>
                 <Badge variant="secondary" className="bg-purple-400/20 text-purple-400">
-                  No tokens required
+                  No points required
                 </Badge>
                 <div className="mt-4 text-purple-300 text-sm font-semibold">Coming soon</div>
               </CardContent>
