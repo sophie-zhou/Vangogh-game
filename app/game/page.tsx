@@ -192,6 +192,8 @@ export default function GamePage() {
     setLives(lives - 1)
     setStreak(0)
     if (lives <= 1) {
+      console.log('🎮 Game over due to time running out, calling addGameResult:', { correctAnswers, totalAnswered, score })
+      addGameResult(correctAnswers, totalAnswered, score)
       setGameOver(true)
     } else {
       nextQuestion()
@@ -207,6 +209,17 @@ export default function GamePage() {
     setIsCorrect(correct)
     setTotalAnswered(prev => prev + 1)
 
+    // Update streak and score immediately
+    if (correct) {
+      const pointsEarned = currentQ.points + (streak * 5)
+      setScore(prev => prev + pointsEarned)
+      setStreak(prev => prev + 1)
+      setCorrectAnswers(prev => prev + 1)
+    } else {
+      setLives(prev => prev - 1)
+      setStreak(0)
+    }
+
     // Debug logging for image assignment
     console.log('🎯 Answer Debug:', {
       choice,
@@ -219,21 +232,11 @@ export default function GamePage() {
     })
 
     setTimeout(() => {
-      if (correct) {
-        // Add base points (10) plus streak bonus (5 per streak)
-        const pointsEarned = currentQ.points + (streak * 5)
-        setScore(score + pointsEarned)
-        setStreak(streak + 1)
-        setCorrectAnswers(prev => prev + 1)
-      } else {
-        setLives(lives - 1)
-        setStreak(0)
-        if (lives <= 1) {
-          console.log('🎮 Game over due to lives lost, calling addGameResult:', { correctAnswers, totalAnswered, score })
-          addGameResult(correctAnswers, totalAnswered, score)
-          setGameOver(true)
-          return
-        }
+      if (lives <= 1) {
+        console.log('🎮 Game over due to lives lost, calling addGameResult:', { correctAnswers, totalAnswered, score })
+        addGameResult(correctAnswers, totalAnswered, score)
+        setGameOver(true)
+        return
       }
       nextQuestion()
     }, 2000)
@@ -335,8 +338,7 @@ export default function GamePage() {
         <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-4 md:p-6 mb-6 border border-yellow-400/30">
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
             <div>
-              <h2 className="text-xl md:text-2xl font-bold text-white">{currentQ.title}</h2>
-              <p className="text-blue-200 text-sm md:text-base">Painted in {currentQ.year}</p>
+              <h2 className="text-xl md:text-2xl font-bold text-white">Question {currentQuestion + 1} of {questions.length}</h2>
             </div>
             <div className="text-center md:text-right">
               <Badge
