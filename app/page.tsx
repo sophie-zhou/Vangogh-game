@@ -67,7 +67,7 @@ export default function HomePage() {
               <CardContent className="p-8 text-center">
                 <Trophy className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
                 <h3 className="text-2xl font-bold text-white mb-2">Play Game</h3>
-                <p className="text-blue-200 mb-4">Test your Van Gogh authentication skills</p>
+                <p className="text-blue-200 mb-4">Test your Van Gogh authentication skills by choosing the real painting</p>
                 <Badge variant="secondary" className="bg-yellow-400/20 text-yellow-400">
                   +10-50 points per game
                 </Badge>

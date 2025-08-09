@@ -334,15 +334,15 @@ export default function GamePage() {
           </div>
         </div>
 
-        {/* Game Info */}
-        <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-4 md:p-6 mb-6 border border-yellow-400/30">
-          <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
+        {/* Game Info - Mobile Optimized */}
+        <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-3 md:p-6 mb-4 md:mb-6 border border-yellow-400/30">
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-2 md:mb-4 gap-2 md:gap-4">
             <div>
-              <h2 className="text-xl md:text-2xl font-bold text-white">Question {currentQuestion + 1} of {questions.length}</h2>
+              <h2 className="text-lg md:text-2xl font-bold text-white">Question {currentQuestion + 1} of {questions.length}</h2>
             </div>
             <div className="text-center md:text-right">
               <Badge
-                className={`mb-2 text-sm ${
+                className={`mb-1 md:mb-2 text-xs md:text-sm ${
                   currentQ.difficulty === "Easy"
                     ? "bg-green-600"
                     : currentQ.difficulty === "Medium"
@@ -354,37 +354,37 @@ export default function GamePage() {
               >
                 {currentQ.difficulty} - {currentQ.points} pts
               </Badge>
-              <div className="flex items-center justify-center md:justify-end gap-2 text-white">
-                <Timer className="w-4 h-4" />
-                <span className="text-lg md:text-xl font-bold">{timeLeft}s</span>
+              <div className="flex items-center justify-center md:justify-end gap-1 md:gap-2 text-white">
+                <Timer className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="text-sm md:text-xl font-bold">{timeLeft}s</span>
               </div>
             </div>
           </div>
-          <Progress value={(timeLeft / 30) * 100} className="h-2" />
+          <Progress value={(timeLeft / 30) * 100} className="h-1 md:h-2" />
         </div>
 
-        {/* Game Question */}
-        <div className="text-center mb-6 md:mb-8">
-          <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">Which painting is the REAL Van Gogh?</h3>
-          <p className="text-blue-200 text-base md:text-lg">Look carefully at the brushstrokes, color palette, and artistic style</p>
+        {/* Game Question - Mobile Optimized */}
+        <div className="text-center mb-4 md:mb-8">
+          <h3 className="text-xl md:text-3xl font-bold text-white mb-2 md:mb-4">Which painting is the REAL Van Gogh?</h3>
+          <p className="text-blue-200 text-sm md:text-lg">Look carefully at the brushstrokes, color palette, and artistic style</p>
         </div>
 
-        {/* Image Comparison */}
-        <div className="grid md:grid-cols-2 gap-4 md:gap-8 mb-8">
+        {/* Image Comparison - Mobile Optimized */}
+        <div className="grid md:grid-cols-2 gap-3 md:gap-8 mb-6 md:mb-8">
           <Card
             className={`cursor-pointer transition-all duration-300 hover:scale-105 ${
               selectedAnswer === "real" ? "ring-4 ring-green-400" : "hover:ring-2 hover:ring-yellow-400"
-            } ${showResult ? "pointer-events-none" : ""} min-h-[400px]`}
+            } ${showResult ? "pointer-events-none" : ""} min-h-[300px] md:min-h-[400px]`}
             onClick={() => !showResult && handleAnswer("left")}
           >
-            <CardContent className="p-4">
-              <div className="relative mb-4">
+            <CardContent className="p-3 md:p-4">
+              <div className="relative mb-3 md:mb-4">
                 <Image
                   src={currentQ.realIsLeft ? currentQ.realImage : currentQ.fakeImage || "/placeholder.svg"}
                   alt="Option A"
                   width={400}
                   height={400}
-                  className="w-full h-64 md:h-80 object-cover rounded-lg"
+                  className="w-full h-48 md:h-80 object-cover rounded-lg"
                 />
                 {showResult && selectedAnswer === "real" && isCorrect && (
                   <div className="absolute inset-0 bg-green-500/40 rounded-lg flex items-center justify-center">
@@ -402,7 +402,7 @@ export default function GamePage() {
                   </div>
                 )}
               </div>
-              <Button className="w-full bg-blue-600 hover:bg-blue-700 h-12 text-lg" disabled={showResult}>
+              <Button className="w-full bg-blue-600 hover:bg-blue-700 h-10 md:h-12 text-base md:text-lg" disabled={showResult}>
                 Choose Left Image
               </Button>
             </CardContent>
@@ -411,17 +411,17 @@ export default function GamePage() {
           <Card
             className={`cursor-pointer transition-all duration-300 hover:scale-105 ${
               selectedAnswer === "fake" ? "ring-4 ring-green-400" : "hover:ring-2 hover:ring-yellow-400"
-            } ${showResult ? "pointer-events-none" : ""} min-h-[400px]`}
+            } ${showResult ? "pointer-events-none" : ""} min-h-[300px] md:min-h-[400px]`}
             onClick={() => !showResult && handleAnswer("right")}
           >
-            <CardContent className="p-4">
-              <div className="relative mb-4">
+            <CardContent className="p-3 md:p-4">
+              <div className="relative mb-3 md:mb-4">
                 <Image
                   src={currentQ.realIsLeft ? currentQ.fakeImage : currentQ.realImage || "/placeholder.svg"}
                   alt="Option B"
                   width={400}
                   height={400}
-                  className="w-full h-64 md:h-80 object-cover rounded-lg"
+                  className="w-full h-48 md:h-80 object-cover rounded-lg"
                 />
                 {showResult && selectedAnswer === "fake" && isCorrect && (
                   <div className="absolute inset-0 bg-green-500/40 rounded-lg flex items-center justify-center">
@@ -439,15 +439,15 @@ export default function GamePage() {
                   </div>
                 )}
               </div>
-              <Button className="w-full bg-purple-600 hover:bg-purple-700 h-12 text-lg" disabled={showResult}>
+              <Button className="w-full bg-purple-600 hover:bg-purple-700 h-10 md:h-12 text-base md:text-lg" disabled={showResult}>
                 Choose Right Image
               </Button>
             </CardContent>
           </Card>
         </div>
 
-        {/* Progress */}
-        <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-4 border border-yellow-400/30">
+        {/* Progress - Mobile Optimized */}
+        <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-3 md:p-4 border border-yellow-400/30">
           <div className="flex items-center justify-between mb-2">
             <span className="text-white">
               Question {currentQuestion + 1} of {questions.length}
