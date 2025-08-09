@@ -352,7 +352,7 @@ export default function GamePage() {
                         : "bg-red-600"
                 }`}
               >
-                {currentQ.difficulty} - {currentQ.points} pts
+                {currentQ.difficulty} - {currentQ.points + (streak * 5)} pts
               </Badge>
               <div className="flex items-center justify-center md:justify-end gap-2 text-white">
                 <Timer className="w-4 h-4" />
