@@ -309,16 +309,16 @@ export default function GamePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-yellow-800 relative">
-      {/* Back Button - Bottom Left */}
-      <Link href="/" className="absolute bottom-4 left-4 z-20">
+      {/* Back Button - Always Visible */}
+      <Link href="/" className="fixed top-4 left-4 z-30">
         <Button variant="outline" size="sm" className="w-12 h-12 p-0 rounded-full bg-black/50 backdrop-blur-sm border-yellow-400/50">
           <ArrowLeft className="w-5 h-5 text-yellow-400" />
         </Button>
       </Link>
 
-      {/* Stats Bar - Bottom */}
-      <div className="absolute bottom-4 left-20 right-4 z-20">
-        <div className="flex items-center justify-between bg-black/50 backdrop-blur-sm rounded-full px-4 py-2 border border-yellow-400/30">
+      {/* Stats Bar - Bottom Center */}
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-20">
+        <div className="flex items-center justify-center gap-4 bg-black/50 backdrop-blur-sm rounded-full px-6 py-3 border border-yellow-400/30">
           <Badge variant="secondary" className="bg-red-500/20 text-red-400 text-xs">
             <Heart className="w-3 h-3 mr-1" />
             {lives}
@@ -335,15 +335,15 @@ export default function GamePage() {
       </div>
 
       <div className="container mx-auto max-w-6xl p-4">
-        {/* Game Info - Full Width */}
+        {/* Game Info - Full Width with Difficulty in Top Right */}
         <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-3 md:p-6 mb-4 md:mb-6 border border-yellow-400/30 -mx-4 md:mx-0">
-          <div className="flex flex-col md:flex-row md:items-center justify-between mb-2 md:mb-4 gap-2 md:gap-4">
+          <div className="flex items-center justify-between mb-2 md:mb-4">
             <div>
               <h2 className="text-lg md:text-2xl font-bold text-white">Question {currentQuestion + 1} of {questions.length}</h2>
             </div>
-            <div className="text-center md:text-right">
+            <div className="flex items-center gap-2">
               <Badge
-                className={`mb-1 md:mb-2 text-xs md:text-sm ${
+                className={`text-xs md:text-sm ${
                   currentQ.difficulty === "Easy"
                     ? "bg-green-600"
                     : currentQ.difficulty === "Medium"
@@ -355,7 +355,7 @@ export default function GamePage() {
               >
                 {currentQ.difficulty} - {currentQ.points} pts
               </Badge>
-              <div className="flex items-center justify-center md:justify-end gap-1 md:gap-2 text-white">
+              <div className="flex items-center gap-1 md:gap-2 text-white">
                 <Timer className="w-3 h-3 md:w-4 md:h-4" />
                 <span className="text-sm md:text-xl font-bold">{timeLeft}s</span>
               </div>
@@ -442,7 +442,7 @@ export default function GamePage() {
         </div>
 
         {/* Progress - Mobile Optimized */}
-        <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-3 md:p-4 border border-yellow-400/30 mb-20">
+        <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-3 md:p-4 border border-yellow-400/30 mb-24">
           <div className="flex items-center justify-between mb-2">
             <span className="text-white">
               Question {currentQuestion + 1} of {questions.length}
