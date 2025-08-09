@@ -364,17 +364,17 @@ export default function GamePage() {
                   height={400}
                   className="w-full h-64 md:h-80 object-cover rounded-lg"
                 />
-                {showResult && selectedAnswer === "real" && (
+                {showResult && selectedAnswer === "real" && isCorrect && (
                   <div className="absolute inset-0 bg-green-500/40 rounded-lg flex items-center justify-center">
                     <Badge className="bg-green-600 text-white text-xl md:text-lg px-6 py-3 md:px-4 md:py-2 font-bold">Correct!</Badge>
                   </div>
                 )}
-                {showResult && selectedAnswer === "fake" && (
+                {showResult && selectedAnswer === "real" && !isCorrect && (
                   <div className="absolute inset-0 bg-red-500/40 rounded-lg flex items-center justify-center">
                     <Badge className="bg-red-600 text-white text-xl md:text-lg px-6 py-3 md:px-4 md:py-2 font-bold">Wrong!</Badge>
                   </div>
                 )}
-                {showResult && !selectedAnswer && currentQ.realIsLeft && (
+                {showResult && selectedAnswer === "fake" && currentQ.realIsLeft && (
                   <div className="absolute inset-0 bg-green-500/40 rounded-lg flex items-center justify-center">
                     <Badge className="bg-green-600 text-white text-xl md:text-lg px-6 py-3 md:px-4 md:py-2 font-bold">Correct Answer</Badge>
                   </div>
@@ -401,17 +401,17 @@ export default function GamePage() {
                   height={400}
                   className="w-full h-64 md:h-80 object-cover rounded-lg"
                 />
-                {showResult && selectedAnswer === "fake" && (
+                {showResult && selectedAnswer === "fake" && isCorrect && (
                   <div className="absolute inset-0 bg-green-500/40 rounded-lg flex items-center justify-center">
                     <Badge className="bg-green-600 text-white text-xl md:text-lg px-6 py-3 md:px-4 md:py-2 font-bold">Correct!</Badge>
                   </div>
                 )}
-                {showResult && selectedAnswer === "real" && (
+                {showResult && selectedAnswer === "fake" && !isCorrect && (
                   <div className="absolute inset-0 bg-red-500/40 rounded-lg flex items-center justify-center">
                     <Badge className="bg-red-600 text-white text-xl md:text-lg px-6 py-3 md:px-4 md:py-2 font-bold">Wrong!</Badge>
                   </div>
                 )}
-                {showResult && !selectedAnswer && !currentQ.realIsLeft && (
+                {showResult && selectedAnswer === "real" && !currentQ.realIsLeft && (
                   <div className="absolute inset-0 bg-green-500/40 rounded-lg flex items-center justify-center">
                     <Badge className="bg-green-600 text-white text-xl md:text-lg px-6 py-3 md:px-4 md:py-2 font-bold">Correct Answer</Badge>
                   </div>
