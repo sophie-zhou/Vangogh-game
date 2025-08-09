@@ -84,22 +84,6 @@ export default function GamePage() {
       
       console.log(`📸 Filtered images: Real=${realImages.length}, Plagiarized=${plagImages.length}, Supereasy=${supereasyImages.length}, Easy=${easyImages.length}, Difficult=${difficultImages.length}`)
       
-      // Real vs Plagiarized
-      if (realImages.length > 0 && plagImages.length > 0) {
-        const minLen = Math.min(realImages.length, plagImages.length)
-        for (let i = 0; i < minLen; i++) {
-          pairs.push({
-            id: `real-plagiarized-${i}`,
-            realImage: supabase.storage.from('real').getPublicUrl(`All of VanGogh/${realImages[i].name}`).data.publicUrl,
-            fakeImage: supabase.storage.from('plagiarized').getPublicUrl(`Plagiarized/${plagImages[i].name}`).data.publicUrl,
-            difficulty: 'Plagiarized',
-            points: 10,
-            title: realImages[i].name,
-            year: '',
-            realIsLeft: Math.random() < 0.5, // Randomly assign real to left or right
-          })
-        }
-      }
       // Real vs Super Easy
       if (realImages.length > 0 && supereasyImages.length > 0) {
         const minLen = Math.min(realImages.length, supereasyImages.length)
@@ -109,7 +93,7 @@ export default function GamePage() {
             realImage: supabase.storage.from('real').getPublicUrl(`All of VanGogh/${realImages[i].name}`).data.publicUrl,
             fakeImage: supabase.storage.from('supereasy').getPublicUrl(`Supereasy/${supereasyImages[i].name}`).data.publicUrl,
             difficulty: 'Super Easy',
-            points: 10,
+            points: 5,
             title: realImages[i].name,
             year: '',
             realIsLeft: Math.random() < 0.5, // Randomly assign real to left or right
@@ -132,6 +116,22 @@ export default function GamePage() {
           })
         }
       }
+      // Real vs Plagiarized
+      if (realImages.length > 0 && plagImages.length > 0) {
+        const minLen = Math.min(realImages.length, plagImages.length)
+        for (let i = 0; i < minLen; i++) {
+          pairs.push({
+            id: `real-plagiarized-${i}`,
+            realImage: supabase.storage.from('real').getPublicUrl(`All of VanGogh/${realImages[i].name}`).data.publicUrl,
+            fakeImage: supabase.storage.from('plagiarized').getPublicUrl(`Plagiarized/${plagImages[i].name}`).data.publicUrl,
+            difficulty: 'Plagiarized',
+            points: 15,
+            title: realImages[i].name,
+            year: '',
+            realIsLeft: Math.random() < 0.5, // Randomly assign real to left or right
+          })
+        }
+      }
       // Real vs Difficult
       if (realImages.length > 0 && difficultImages.length > 0) {
         const minLen = Math.min(realImages.length, difficultImages.length)
@@ -141,7 +141,7 @@ export default function GamePage() {
             realImage: supabase.storage.from('real').getPublicUrl(`All of VanGogh/${realImages[i].name}`).data.publicUrl,
             fakeImage: supabase.storage.from('difficult').getPublicUrl(`Difficult/${difficultImages[i].name}`).data.publicUrl,
             difficulty: 'Difficult',
-            points: 10,
+            points: 20,
             title: realImages[i].name,
             year: '',
             realIsLeft: Math.random() < 0.5, // Randomly assign real to left or right
@@ -211,7 +211,7 @@ export default function GamePage() {
 
     // Update streak and score immediately
     if (correct) {
-      const pointsEarned = currentQ.points + (streak * 5)
+      const pointsEarned = currentQ.points
       setScore(prev => prev + pointsEarned)
       setStreak(prev => prev + 1)
       setCorrectAnswers(prev => prev + 1)
@@ -352,7 +352,7 @@ export default function GamePage() {
                         : "bg-red-600"
                 }`}
               >
-                {currentQ.difficulty} - {currentQ.points + (streak * 5)} pts
+                {currentQ.difficulty} - {currentQ.points} pts
               </Badge>
               <div className="flex items-center justify-center md:justify-end gap-2 text-white">
                 <Timer className="w-4 h-4" />
