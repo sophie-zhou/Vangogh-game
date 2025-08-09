@@ -84,17 +84,34 @@ export default function GamePage() {
       
       console.log(`📸 Filtered images: Real=${realImages.length}, Plagiarized=${plagImages.length}, Supereasy=${supereasyImages.length}, Easy=${easyImages.length}, Difficult=${difficultImages.length}`)
       
+      // Helper function to shuffle array
+      const shuffleArray = (array: any[]) => {
+        const shuffled = [...array]
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1))
+          ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+        }
+        return shuffled
+      }
+
+      // Shuffle all image arrays
+      const shuffledRealImages = shuffleArray(realImages)
+      const shuffledSupereasyImages = shuffleArray(supereasyImages)
+      const shuffledEasyImages = shuffleArray(easyImages)
+      const shuffledPlagImages = shuffleArray(plagImages)
+      const shuffledDifficultImages = shuffleArray(difficultImages)
+
       // Real vs Super Easy
       if (realImages.length > 0 && supereasyImages.length > 0) {
         const minLen = Math.min(realImages.length, supereasyImages.length)
         for (let i = 0; i < minLen; i++) {
           pairs.push({
             id: `real-super-easy-${i}`,
-            realImage: supabase.storage.from('real').getPublicUrl(`All of VanGogh/${realImages[i].name}`).data.publicUrl,
-            fakeImage: supabase.storage.from('supereasy').getPublicUrl(`Supereasy/${supereasyImages[i].name}`).data.publicUrl,
+            realImage: supabase.storage.from('real').getPublicUrl(`All of VanGogh/${shuffledRealImages[i].name}`).data.publicUrl,
+            fakeImage: supabase.storage.from('supereasy').getPublicUrl(`Supereasy/${shuffledSupereasyImages[i].name}`).data.publicUrl,
             difficulty: 'Super Easy',
             points: 5,
-            title: realImages[i].name,
+            title: shuffledRealImages[i].name,
             year: '',
             realIsLeft: Math.random() < 0.5, // Randomly assign real to left or right
           })
@@ -106,11 +123,11 @@ export default function GamePage() {
         for (let i = 0; i < minLen; i++) {
           pairs.push({
             id: `real-easy-${i}`,
-            realImage: supabase.storage.from('real').getPublicUrl(`All of VanGogh/${realImages[i].name}`).data.publicUrl,
-            fakeImage: supabase.storage.from('easy').getPublicUrl(`Easy/${easyImages[i].name}`).data.publicUrl,
+            realImage: supabase.storage.from('real').getPublicUrl(`All of VanGogh/${shuffledRealImages[i].name}`).data.publicUrl,
+            fakeImage: supabase.storage.from('easy').getPublicUrl(`Easy/${shuffledEasyImages[i].name}`).data.publicUrl,
             difficulty: 'Easy',
             points: 10,
-            title: realImages[i].name,
+            title: shuffledRealImages[i].name,
             year: '',
             realIsLeft: Math.random() < 0.5, // Randomly assign real to left or right
           })
@@ -122,11 +139,11 @@ export default function GamePage() {
         for (let i = 0; i < minLen; i++) {
           pairs.push({
             id: `real-plagiarized-${i}`,
-            realImage: supabase.storage.from('real').getPublicUrl(`All of VanGogh/${realImages[i].name}`).data.publicUrl,
-            fakeImage: supabase.storage.from('plagiarized').getPublicUrl(`Plagiarized/${plagImages[i].name}`).data.publicUrl,
+            realImage: supabase.storage.from('real').getPublicUrl(`All of VanGogh/${shuffledRealImages[i].name}`).data.publicUrl,
+            fakeImage: supabase.storage.from('plagiarized').getPublicUrl(`Plagiarized/${shuffledPlagImages[i].name}`).data.publicUrl,
             difficulty: 'Plagiarized',
             points: 15,
-            title: realImages[i].name,
+            title: shuffledRealImages[i].name,
             year: '',
             realIsLeft: Math.random() < 0.5, // Randomly assign real to left or right
           })
@@ -138,11 +155,11 @@ export default function GamePage() {
         for (let i = 0; i < minLen; i++) {
           pairs.push({
             id: `real-difficult-${i}`,
-            realImage: supabase.storage.from('real').getPublicUrl(`All of VanGogh/${realImages[i].name}`).data.publicUrl,
-            fakeImage: supabase.storage.from('difficult').getPublicUrl(`Difficult/${difficultImages[i].name}`).data.publicUrl,
+            realImage: supabase.storage.from('real').getPublicUrl(`All of VanGogh/${shuffledRealImages[i].name}`).data.publicUrl,
+            fakeImage: supabase.storage.from('difficult').getPublicUrl(`Difficult/${shuffledDifficultImages[i].name}`).data.publicUrl,
             difficulty: 'Difficult',
             points: 20,
-            title: realImages[i].name,
+            title: shuffledRealImages[i].name,
             year: '',
             realIsLeft: Math.random() < 0.5, // Randomly assign real to left or right
           })

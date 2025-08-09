@@ -79,7 +79,7 @@ export default function HomePage() {
             <Card className="bg-gradient-to-br from-purple-800/80 to-blue-800/80 border-purple-400/50 hover:border-purple-400 transition-all duration-300 hover:scale-105 cursor-pointer backdrop-blur-sm">
               <CardContent className="p-8 text-center">
                 <BookOpen className="w-16 h-16 text-purple-400 mx-auto mb-4" />
-                <h3 className="text-2xl font-bold text-white mb-2">Educate Yourself</h3>
+                <h3 className="text-2xl font-bold text-white mb-2">Educate!</h3>
                 <p className="text-purple-200 mb-4">Learn how to spot real Van Gogh paintings</p>
                 <Badge variant="secondary" className="bg-purple-400/20 text-purple-400">
                   No tokens required
