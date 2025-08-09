@@ -193,7 +193,7 @@ export default function GamePage() {
     setStreak(0)
     if (lives <= 1) {
       console.log('🎮 Game over due to time running out, calling addGameResult:', { correctAnswers, totalAnswered, score })
-      addGameResult(correctAnswers, totalAnswered, score)
+      addGameResult(correctAnswers, totalAnswered, score, streak)
       setGameOver(true)
     } else {
       nextQuestion()
@@ -234,7 +234,7 @@ export default function GamePage() {
     setTimeout(() => {
       if (lives <= 1) {
         console.log('🎮 Game over due to lives lost, calling addGameResult:', { correctAnswers, totalAnswered, score })
-        addGameResult(correctAnswers, totalAnswered, score)
+        addGameResult(correctAnswers, totalAnswered, score, streak)
         setGameOver(true)
         return
       }
@@ -252,7 +252,7 @@ export default function GamePage() {
     } else {
       // Game completed - update global stats
       console.log('🎮 Game completed, calling addGameResult:', { correctAnswers, totalAnswered, score })
-      addGameResult(correctAnswers, totalAnswered, score)
+      addGameResult(correctAnswers, totalAnswered, score, streak)
       setGameOver(true)
     }
   }

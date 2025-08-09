@@ -15,7 +15,7 @@ interface GameStats {
 interface StatsContextType {
   stats: GameStats
   updateStats: (newStats: Partial<GameStats>) => void
-  addGameResult: (correct: number, total: number, points: number) => void
+  addGameResult: (correct: number, total: number, points: number, streak: number) => void
   resetStats: () => void
 }
 
@@ -62,7 +62,7 @@ export function StatsProvider({ children }: { children: React.ReactNode }) {
     setStats(prev => ({ ...prev, ...newStats }))
   }
 
-  const addGameResult = (correct: number, total: number, points: number) => {
+  const addGameResult = (correct: number, total: number, points: number, streak: number) => {
     setStats(prev => {
       const newTotalCorrect = prev.totalCorrect + correct
       const newTotalAnswered = prev.totalAnswered + total
@@ -82,7 +82,8 @@ export function StatsProvider({ children }: { children: React.ReactNode }) {
         accuracy: newAccuracy,
         gamesPlayed: newGamesPlayed,
         totalCorrect: newTotalCorrect,
-        totalAnswered: newTotalAnswered
+        totalAnswered: newTotalAnswered,
+        streak: streak // Update streak in global stats
       }
     })
   }
