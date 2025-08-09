@@ -161,7 +161,13 @@ export default function GamePage() {
       setQuestions(gameQuestions)
       setLoading(false)
       console.log(`✅ Game ready with ${gameQuestions.length} questions`)
-      console.log('🎲 Question randomization:', gameQuestions.map(q => ({ id: q.id, realIsLeft: q.realIsLeft })))
+      console.log('🎲 Question details:', gameQuestions.map(q => ({ 
+        id: q.id, 
+        realIsLeft: q.realIsLeft,
+        leftImage: q.realIsLeft ? "REAL Van Gogh" : "AI Generated",
+        rightImage: q.realIsLeft ? "AI Generated" : "REAL Van Gogh",
+        title: q.title
+      })))
       
     } catch (error) {
       console.error('❌ Error fetching images:', error)
@@ -201,6 +207,17 @@ export default function GamePage() {
     setIsCorrect(correct)
     setTotalAnswered(prev => prev + 1)
 
+    // Debug logging for image assignment
+    console.log('🎯 Answer Debug:', {
+      choice,
+      realIsLeft: currentQ.realIsLeft,
+      correct,
+      selectedAnswer: choice === "left" ? "real" : "fake",
+      leftImage: currentQ.realIsLeft ? "REAL Van Gogh" : "AI Generated",
+      rightImage: currentQ.realIsLeft ? "AI Generated" : "REAL Van Gogh",
+      questionTitle: currentQ.title
+    })
+
     setTimeout(() => {
       if (correct) {
         // Add base points (10) plus streak bonus (5 per streak)
@@ -212,6 +229,8 @@ export default function GamePage() {
         setLives(lives - 1)
         setStreak(0)
         if (lives <= 1) {
+          console.log('🎮 Game over due to lives lost, calling addGameResult:', { correctAnswers, totalAnswered, score })
+          addGameResult(correctAnswers, totalAnswered, score)
           setGameOver(true)
           return
         }
@@ -229,6 +248,7 @@ export default function GamePage() {
       setIsCorrect(null)
     } else {
       // Game completed - update global stats
+      console.log('🎮 Game completed, calling addGameResult:', { correctAnswers, totalAnswered, score })
       addGameResult(correctAnswers, totalAnswered, score)
       setGameOver(true)
     }

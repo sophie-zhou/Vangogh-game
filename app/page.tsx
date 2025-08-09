@@ -10,6 +10,9 @@ import { useStats } from "@/lib/stats-context"
 export default function HomePage() {
   const { stats } = useStats()
 
+  // Debug logging
+  console.log('🏠 Home Page Stats:', stats)
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-yellow-800 relative overflow-hidden">
       {/* Van Gogh-style swirls background */}
