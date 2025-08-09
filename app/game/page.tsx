@@ -288,23 +288,23 @@ export default function GamePage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-yellow-800 p-4">
       <div className="container mx-auto max-w-6xl">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
           <Link href="/">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="w-full md:w-auto">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
             </Button>
           </Link>
-          <div className="flex items-center gap-4">
-            <Badge variant="secondary" className="bg-red-500/20 text-red-400">
+          <div className="flex items-center gap-2 md:gap-4 flex-wrap justify-center">
+            <Badge variant="secondary" className="bg-red-500/20 text-red-400 text-sm">
               <Heart className="w-4 h-4 mr-1" />
               {lives}
             </Badge>
-            <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-400">
+            <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-400 text-sm">
               <Star className="w-4 h-4 mr-1" />
               {score}
             </Badge>
-            <Badge variant="secondary" className="bg-orange-500/20 text-orange-400">
+            <Badge variant="secondary" className="bg-orange-500/20 text-orange-400 text-sm">
               <Zap className="w-4 h-4 mr-1" />
               {streak}
             </Badge>
@@ -312,15 +312,15 @@ export default function GamePage() {
         </div>
 
         {/* Game Info */}
-        <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-yellow-400/30">
-          <div className="flex items-center justify-between mb-4">
+        <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-4 md:p-6 mb-6 border border-yellow-400/30">
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
             <div>
-              <h2 className="text-2xl font-bold text-white">{currentQ.title}</h2>
-              <p className="text-blue-200">Painted in {currentQ.year}</p>
+              <h2 className="text-xl md:text-2xl font-bold text-white">{currentQ.title}</h2>
+              <p className="text-blue-200 text-sm md:text-base">Painted in {currentQ.year}</p>
             </div>
-            <div className="text-right">
+            <div className="text-center md:text-right">
               <Badge
-                className={`mb-2 ${
+                className={`mb-2 text-sm ${
                   currentQ.difficulty === "Easy"
                     ? "bg-green-600"
                     : currentQ.difficulty === "Medium"
@@ -332,9 +332,9 @@ export default function GamePage() {
               >
                 {currentQ.difficulty} - {currentQ.points} pts
               </Badge>
-              <div className="flex items-center gap-2 text-white">
+              <div className="flex items-center justify-center md:justify-end gap-2 text-white">
                 <Timer className="w-4 h-4" />
-                <span className="text-xl font-bold">{timeLeft}s</span>
+                <span className="text-lg md:text-xl font-bold">{timeLeft}s</span>
               </div>
             </div>
           </div>
@@ -342,40 +342,17 @@ export default function GamePage() {
         </div>
 
         {/* Game Question */}
-        <div className="text-center mb-8">
-          <h3 className="text-3xl font-bold text-white mb-4">Which painting is the REAL Van Gogh?</h3>
-          <p className="text-blue-200 text-lg">Look carefully at the brushstrokes, color palette, and artistic style</p>
+        <div className="text-center mb-6 md:mb-8">
+          <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">Which painting is the REAL Van Gogh?</h3>
+          <p className="text-blue-200 text-base md:text-lg">Look carefully at the brushstrokes, color palette, and artistic style</p>
         </div>
 
-        {/* Feedback Display */}
-        {showResult && isCorrect !== null && (
-          <div className="text-center mb-6">
-            <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-full text-lg font-bold ${
-              isCorrect 
-                ? 'bg-green-500/20 text-green-400 border border-green-400/50' 
-                : 'bg-red-500/20 text-red-400 border border-red-400/50'
-            }`}>
-              {isCorrect ? (
-                <>
-                  <span className="text-2xl">✅</span>
-                  <span>Correct! Well done!</span>
-                </>
-              ) : (
-                <>
-                  <span className="text-2xl">❌</span>
-                  <span>Incorrect! Try again next time.</span>
-                </>
-              )}
-            </div>
-          </div>
-        )}
-
         {/* Image Comparison */}
-        <div className="grid md:grid-cols-2 gap-8 mb-8">
+        <div className="grid md:grid-cols-2 gap-4 md:gap-8 mb-8">
           <Card
             className={`cursor-pointer transition-all duration-300 hover:scale-105 ${
               selectedAnswer === "real" ? "ring-4 ring-green-400" : "hover:ring-2 hover:ring-yellow-400"
-            } ${showResult ? "pointer-events-none" : ""}`}
+            } ${showResult ? "pointer-events-none" : ""} min-h-[400px]`}
             onClick={() => !showResult && handleAnswer("left")}
           >
             <CardContent className="p-4">
@@ -385,25 +362,25 @@ export default function GamePage() {
                   alt="Option A"
                   width={400}
                   height={400}
-                  className="w-full h-80 object-cover rounded-lg"
+                  className="w-full h-64 md:h-80 object-cover rounded-lg"
                 />
                 {showResult && selectedAnswer === "real" && (
-                  <div className="absolute inset-0 bg-green-500/20 rounded-lg flex items-center justify-center">
-                    <Badge className="bg-green-600 text-white text-lg px-4 py-2">Your Choice</Badge>
+                  <div className="absolute inset-0 bg-green-500/40 rounded-lg flex items-center justify-center">
+                    <Badge className="bg-green-600 text-white text-xl md:text-lg px-6 py-3 md:px-4 md:py-2 font-bold">Correct!</Badge>
                   </div>
                 )}
                 {showResult && selectedAnswer === "fake" && (
-                  <div className="absolute inset-0 bg-red-500/20 rounded-lg flex items-center justify-center">
-                    <Badge className="bg-red-600 text-white text-lg px-4 py-2">Your Choice</Badge>
+                  <div className="absolute inset-0 bg-red-500/40 rounded-lg flex items-center justify-center">
+                    <Badge className="bg-red-600 text-white text-xl md:text-lg px-6 py-3 md:px-4 md:py-2 font-bold">Wrong!</Badge>
                   </div>
                 )}
                 {showResult && !selectedAnswer && currentQ.realIsLeft && (
-                  <div className="absolute inset-0 bg-green-500/20 rounded-lg flex items-center justify-center">
-                    <Badge className="bg-green-600 text-white text-lg px-4 py-2">Correct Answer</Badge>
+                  <div className="absolute inset-0 bg-green-500/40 rounded-lg flex items-center justify-center">
+                    <Badge className="bg-green-600 text-white text-xl md:text-lg px-6 py-3 md:px-4 md:py-2 font-bold">Correct Answer</Badge>
                   </div>
                 )}
               </div>
-              <Button className="w-full bg-blue-600 hover:bg-blue-700" disabled={showResult}>
+              <Button className="w-full bg-blue-600 hover:bg-blue-700 h-12 text-lg" disabled={showResult}>
                 Choose Left Image
               </Button>
             </CardContent>
@@ -412,7 +389,7 @@ export default function GamePage() {
           <Card
             className={`cursor-pointer transition-all duration-300 hover:scale-105 ${
               selectedAnswer === "fake" ? "ring-4 ring-green-400" : "hover:ring-2 hover:ring-yellow-400"
-            } ${showResult ? "pointer-events-none" : ""}`}
+            } ${showResult ? "pointer-events-none" : ""} min-h-[400px]`}
             onClick={() => !showResult && handleAnswer("right")}
           >
             <CardContent className="p-4">
@@ -422,25 +399,25 @@ export default function GamePage() {
                   alt="Option B"
                   width={400}
                   height={400}
-                  className="w-full h-80 object-cover rounded-lg"
+                  className="w-full h-64 md:h-80 object-cover rounded-lg"
                 />
                 {showResult && selectedAnswer === "fake" && (
-                  <div className="absolute inset-0 bg-green-500/20 rounded-lg flex items-center justify-center">
-                    <Badge className="bg-green-600 text-white text-lg px-4 py-2">Your Choice</Badge>
+                  <div className="absolute inset-0 bg-green-500/40 rounded-lg flex items-center justify-center">
+                    <Badge className="bg-green-600 text-white text-xl md:text-lg px-6 py-3 md:px-4 md:py-2 font-bold">Correct!</Badge>
                   </div>
                 )}
                 {showResult && selectedAnswer === "real" && (
-                  <div className="absolute inset-0 bg-red-500/20 rounded-lg flex items-center justify-center">
-                    <Badge className="bg-red-600 text-white text-lg px-4 py-2">Your Choice</Badge>
+                  <div className="absolute inset-0 bg-red-500/40 rounded-lg flex items-center justify-center">
+                    <Badge className="bg-red-600 text-white text-xl md:text-lg px-6 py-3 md:px-4 md:py-2 font-bold">Wrong!</Badge>
                   </div>
                 )}
                 {showResult && !selectedAnswer && !currentQ.realIsLeft && (
-                  <div className="absolute inset-0 bg-green-500/20 rounded-lg flex items-center justify-center">
-                    <Badge className="bg-green-600 text-white text-lg px-4 py-2">Correct Answer</Badge>
+                  <div className="absolute inset-0 bg-green-500/40 rounded-lg flex items-center justify-center">
+                    <Badge className="bg-green-600 text-white text-xl md:text-lg px-6 py-3 md:px-4 md:py-2 font-bold">Correct Answer</Badge>
                   </div>
                 )}
               </div>
-              <Button className="w-full bg-purple-600 hover:bg-purple-700" disabled={showResult}>
+              <Button className="w-full bg-purple-600 hover:bg-purple-700 h-12 text-lg" disabled={showResult}>
                 Choose Right Image
               </Button>
             </CardContent>

@@ -33,20 +33,6 @@ export function StatsProvider({ children }: { children: React.ReactNode }) {
       totalCorrect: 0,
       totalAnswered: 0
     }
-    
-    // Load from localStorage only on client side after initial render
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('vangogh-game-stats')
-      if (saved) {
-        try {
-          return JSON.parse(saved)
-        } catch (error) {
-          console.error('Error parsing stats from localStorage:', error)
-          return defaultStats
-        }
-      }
-    }
-    
     return defaultStats
   })
 
@@ -63,7 +49,7 @@ export function StatsProvider({ children }: { children: React.ReactNode }) {
         }
       }
     }
-  }, [])
+  }, []) // Empty dependency array ensures this runs once after initial render
 
   // Save to localStorage whenever stats change
   useEffect(() => {
