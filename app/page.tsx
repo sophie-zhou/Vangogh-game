@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
+import { CustomProgress } from "@/components/ui/custom-progress"
 import { Palette, Trophy, BookOpen } from "lucide-react"
 import Link from "next/link"
 import { useStats } from "@/lib/stats-context"
@@ -104,7 +104,7 @@ export default function HomePage() {
                 <span className="text-purple-200">Lessons Completed</span>
                 <span className="text-purple-400 font-bold">{learningProgress.completedLessons.length}/{learningProgress.totalLessons}</span>
               </div>
-              <Progress value={(learningProgress.completedLessons.length / learningProgress.totalLessons) * 100} className="h-3 mb-4" />
+              <CustomProgress variant="learning" value={(learningProgress.completedLessons.length / learningProgress.totalLessons) * 100} className="h-3 mb-4" />
               <p className="text-sm text-blue-200">
                 {learningProgress.completedLessons.length === 0 ? "Start with basic techniques" : 
                  learningProgress.completedLessons.length < 3 ? "Great progress! Keep learning" : 
@@ -116,7 +116,7 @@ export default function HomePage() {
                 <span className="text-purple-200">Techniques Mastered</span>
                 <span className="text-purple-400 font-bold">{learningProgress.masteredTechniques.length}/{learningProgress.totalTechniques}</span>
               </div>
-              <Progress value={(learningProgress.masteredTechniques.length / learningProgress.totalTechniques) * 100} className="h-3 mb-4" />
+              <CustomProgress value={(learningProgress.masteredTechniques.length / learningProgress.totalTechniques) * 100} className="h-3 mb-4" />
               <p className="text-sm text-blue-200">
                 {learningProgress.masteredTechniques.length === 0 ? "Learn brushwork, color, and composition" : 
                  learningProgress.masteredTechniques.length < 2 ? "Building your skills!" : 
@@ -132,7 +132,7 @@ export default function HomePage() {
             <h3 className="text-xl font-bold text-white">Level Progress</h3>
             <span className="text-yellow-400 font-bold">Level {stats.level}</span>
           </div>
-          <Progress value={((stats.points % 100) / 100) * 100} className="h-3 mb-2" />
+          <CustomProgress variant="level" value={((stats.points % 100) / 100) * 100} className="h-3 mb-2" />
           <p className="text-sm text-blue-200">{100 - (stats.points % 100)} more points to reach Level {stats.level + 1}</p>
         </div>
       </div>
