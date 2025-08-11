@@ -6,12 +6,15 @@ import { Progress } from "@/components/ui/progress"
 import { Palette, Trophy, BookOpen } from "lucide-react"
 import Link from "next/link"
 import { useStats } from "@/lib/stats-context"
+import { useLearning } from "@/lib/learning-context"
 
 export default function HomePage() {
   const { stats } = useStats()
+  const { learningProgress } = useLearning()
 
   // Debug logging
   console.log('🏠 Home Page Stats:', stats)
+  console.log('📚 Learning Progress:', learningProgress)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-yellow-800 relative overflow-hidden">
@@ -79,15 +82,48 @@ export default function HomePage() {
             <Card className="bg-gradient-to-br from-purple-800/80 to-blue-800/80 border-purple-400/50 hover:border-purple-400 transition-all duration-300 hover:scale-105 cursor-pointer backdrop-blur-sm">
               <CardContent className="p-8 text-center">
                 <BookOpen className="w-16 h-16 text-purple-400 mx-auto mb-4" />
-                <h3 className="text-2xl font-bold text-white mb-2">Educate!</h3>
-                <p className="text-purple-200 mb-4">Learn how to spot real Van Gogh paintings</p>
-                <Badge variant="secondary" className="bg-purple-400/20 text-purple-400">
-                  No points required
+                <h3 className="text-2xl font-bold text-white mb-2">Learning Center!</h3>
+                <p className="text-purple-200 mb-4">Master Van Gogh authentication techniques</p>
+                <Badge variant="secondary" className="bg-purple-400/20 text-purple-400 text-base">
+                  Interactive learning
                 </Badge>
-                <div className="mt-4 text-purple-300 text-sm font-semibold">Coming soon</div>
               </CardContent>
             </Card>
           </Link>
+        </div>
+
+        {/* Learning Progress */}
+        <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-6 mb-8 border border-purple-400/30">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-bold text-white">Your Learning Progress</h3>
+            <span className="text-purple-400 font-bold">Learning Center</span>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-purple-200">Lessons Completed</span>
+                <span className="text-purple-400 font-bold">{learningProgress.completedLessons.length}/{learningProgress.totalLessons}</span>
+              </div>
+              <Progress value={(learningProgress.completedLessons.length / learningProgress.totalLessons) * 100} className="h-3 mb-4" />
+              <p className="text-sm text-blue-200">
+                {learningProgress.completedLessons.length === 0 ? "Start with basic techniques" : 
+                 learningProgress.completedLessons.length < 3 ? "Great progress! Keep learning" : 
+                 "Almost there! Complete the course"}
+              </p>
+            </div>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-purple-200">Techniques Mastered</span>
+                <span className="text-purple-400 font-bold">{learningProgress.masteredTechniques.length}/{learningProgress.totalTechniques}</span>
+              </div>
+              <Progress value={(learningProgress.masteredTechniques.length / learningProgress.totalTechniques) * 100} className="h-3 mb-4" />
+              <p className="text-sm text-blue-200">
+                {learningProgress.masteredTechniques.length === 0 ? "Learn brushwork, color, and composition" : 
+                 learningProgress.masteredTechniques.length < 2 ? "Building your skills!" : 
+                 "Expert level achieved!"}
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Level Progress */}

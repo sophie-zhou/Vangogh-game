@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { StatsProvider } from "@/lib/stats-context"
+import { LearningProvider } from "@/lib/learning-context"
 import { Analytics } from "@vercel/analytics/react"
 
 export const metadata: Metadata = {
@@ -13,7 +14,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en">
       <body>
         <StatsProvider>
-          {children}
+          <LearningProvider>
+            {children}
+          </LearningProvider>
         </StatsProvider>
         <Analytics />
       </body>
