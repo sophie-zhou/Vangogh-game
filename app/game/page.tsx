@@ -205,16 +205,24 @@ export default function GamePage() {
     }
   }, [timeLeft, gameOver, showResult])
 
+  // Debug logging for state changes
+  useEffect(() => {
+    console.log('🎮 Game State Updated:', { lives, score, streak, timeLeft, currentQuestion })
+  }, [lives, score, streak, timeLeft, currentQuestion])
+
   const handleTimeUp = () => {
-    setLives(lives - 1)
+    setLives(prev => {
+      const newLives = prev - 1
+      if (newLives <= 0) {
+        console.log('🎮 Game over due to time running out, calling addGameResult:', { correctAnswers, totalAnswered, score })
+        addGameResult(correctAnswers, totalAnswered, score, streak)
+        setGameOver(true)
+      } else {
+        nextQuestion()
+      }
+      return newLives
+    })
     setStreak(0)
-    if (lives <= 1) {
-      console.log('🎮 Game over due to time running out, calling addGameResult:', { correctAnswers, totalAnswered, score })
-      addGameResult(correctAnswers, totalAnswered, score, streak)
-      setGameOver(true)
-    } else {
-      nextQuestion()
-    }
   }
 
   const handleAnswer = (choice: "left" | "right") => {
@@ -249,13 +257,17 @@ export default function GamePage() {
     })
 
     setTimeout(() => {
-      if (lives <= 1) {
-        console.log('🎮 Game over due to lives lost, calling addGameResult:', { correctAnswers, totalAnswered, score })
-        addGameResult(correctAnswers, totalAnswered, score, streak)
-        setGameOver(true)
-        return
-      }
-      nextQuestion()
+      // Use the updated state values
+      setLives(currentLives => {
+        if (currentLives <= 1) {
+          console.log('🎮 Game over due to lives lost, calling addGameResult:', { correctAnswers, totalAnswered, score })
+          addGameResult(correctAnswers, totalAnswered, score, streak)
+          setGameOver(true)
+          return currentLives
+        }
+        nextQuestion()
+        return currentLives
+      })
     }, 2000)
   }
 
@@ -348,6 +360,10 @@ export default function GamePage() {
             <Zap className="w-3 h-3 mr-1" />
             {streak}
           </Badge>
+        </div>
+        {/* Debug info - remove this after testing */}
+        <div className="text-xs text-white mt-2 bg-black/50 px-2 py-1 rounded">
+          Debug: L:{lives} S:{score} St:{streak}
         </div>
       </div>
 
