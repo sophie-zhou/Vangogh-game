@@ -5,7 +5,7 @@ import { LearningProvider } from "@/lib/learning-context"
 import { Analytics } from "@vercel/analytics/react"
 
 export const metadata: Metadata = {
-  title: 'Van Gogh Detective',
+  title: 'VanGotcha!: Van Gogh Detective',
   description: 'Test your Van Gogh authentication skills',
 }
 
