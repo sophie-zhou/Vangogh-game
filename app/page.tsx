@@ -2,8 +2,9 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { CustomProgress } from "@/components/ui/custom-progress"
-import { Palette, Trophy, BookOpen } from "lucide-react"
+import { Palette, Trophy, BookOpen, Upload } from "lucide-react"
 import Link from "next/link"
 import { useStats } from "@/lib/stats-context"
 import { useLearning } from "@/lib/learning-context"
@@ -32,9 +33,18 @@ export default function HomePage() {
             <Palette className="w-12 h-12 text-yellow-400" />
             <h1 className="text-5xl font-bold text-white font-serif">VanGotcha!: Van Gogh Detective</h1>
           </div>
-          <p className="text-xl text-blue-200 max-w-2xl mx-auto">
+          <p className="text-xl text-blue-200 max-w-2xl mx-auto mb-6">
             Master the art of authentication! Distinguish real Van Gogh masterpieces from AI-generated imitations!
           </p>
+          <Link href="/upload">
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold text-lg px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+            >
+              <Upload className="w-5 h-5 mr-2" />
+              Submit your Artwork!
+            </Button>
+          </Link>
         </header>
 
         {/* User Stats Bar */}
