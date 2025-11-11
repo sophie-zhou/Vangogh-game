@@ -8,8 +8,19 @@ import { Progress } from "@/components/ui/progress"
 import { ArrowLeft, Timer, Star, Zap, Heart } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import { supabase } from "@/lib/utils"
+import { createClient } from '@supabase/supabase-js'
 import { useStats } from "@/lib/stats-context"
+
+// Create Supabase client for use in this component
+// Verify environment variables are set
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('❌ Supabase environment variables are not set!')
+}
+
+const supabase = createClient(supabaseUrl || '', supabaseKey || '')
 
 interface GameQuestion {
   id: number
@@ -37,6 +48,7 @@ export default function GamePage() {
   const [loading, setLoading] = useState(true)
   const [correctAnswers, setCorrectAnswers] = useState(0)
   const [totalAnswered, setTotalAnswered] = useState(0)
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     async function fetchImages() {
@@ -44,36 +56,37 @@ export default function GamePage() {
       console.log('🔄 Starting to fetch images...')
       
       try {
-      // Helper to get public URLs for a folder
-      const getPublicUrls = (folder: string, prefix: string, difficulty: string) => {
-        return window.fetch(`/paintings/${folder}/${prefix}/`).then(async () => {
-          // List files in the folder
-          // This is a hack: in production, you should have a manifest or use an API route
-          // Here, we hardcode the file count for demo, or you can fetch from Supabase if uploaded there
-          return [] // Placeholder, will fill below
-        })
-      }
       // For demo, we will just use the Supabase storage API to list files
       // Real
-      const { data: realData } = await supabase.storage.from('real').list('All of VanGogh', { limit: 1000 })
+      const { data: realData, error: realError } = await supabase.storage.from('real').list('All of VanGogh', { limit: 1000 })
+      if (realError) console.error('Error fetching real images:', realError)
+      
       // Plagiarized
-      const { data: plagData } = await supabase.storage.from('plagiarized').list('Plagiarized', { limit: 1000 })
+      const { data: plagData, error: plagError } = await supabase.storage.from('plagiarized').list('Plagiarized', { limit: 1000 })
+      if (plagError) console.error('Error fetching plagiarized images:', plagError)
+      
       // Difficulty
-      const { data: supereasyData } = await supabase.storage.from('supereasy').list('Supereasy', { limit: 1000 })
-      const { data: easyData } = await supabase.storage.from('easy').list('Easy', { limit: 1000 })
-      const { data: difficultData } = await supabase.storage.from('difficult').list('Difficult', { limit: 1000 })
+      const { data: supereasyData, error: supereasyError } = await supabase.storage.from('supereasy').list('Supereasy', { limit: 1000 })
+      if (supereasyError) console.error('Error fetching supereasy images:', supereasyError)
+      
+      const { data: easyData, error: easyError } = await supabase.storage.from('easy').list('Easy', { limit: 1000 })
+      if (easyError) console.error('Error fetching easy images:', easyError)
+      
+      const { data: difficultData, error: difficultError } = await supabase.storage.from('difficult').list('Difficult', { limit: 1000 })
+      if (difficultError) console.error('Error fetching difficult images:', difficultError)
       // Compose pairs
       const pairs: any[] = []
       
-      // Filter out non-image files
+      // Filter out non-image files and hidden files
       const filterImageFiles = (files: any[]) => {
-        return files.filter(file => 
-          file.name.toLowerCase().endsWith('.jpg') || 
-          file.name.toLowerCase().endsWith('.jpeg') || 
-          file.name.toLowerCase().endsWith('.png') ||
-          file.name.toLowerCase().endsWith('.gif') ||
-          file.name.toLowerCase().endsWith('.webp')
-        )
+        if (!files || files.length === 0) return []
+        return files.filter(file => {
+          const fileName = file.name.toLowerCase()
+          const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
+          const hasValidExtension = validExtensions.some(ext => fileName.endsWith(ext))
+          const isNotHidden = !file.name.startsWith('.')
+          return hasValidExtension && isNotHidden
+        })
       }
       
       const realImages = filterImageFiles(realData || [])
@@ -83,6 +96,12 @@ export default function GamePage() {
       const difficultImages = filterImageFiles(difficultData || [])
       
       console.log(`📸 Filtered images: Real=${realImages.length}, Plagiarized=${plagImages.length}, Supereasy=${supereasyImages.length}, Easy=${easyImages.length}, Difficult=${difficultImages.length}`)
+      
+      // Log sample image URLs for debugging
+      if (realImages.length > 0) {
+        const sampleUrl = supabase.storage.from('real').getPublicUrl(`All of VanGogh/${realImages[0].name}`).data.publicUrl
+        console.log('🔗 Sample real image URL:', sampleUrl.substring(0, 100) + '...')
+      }
       
       // Helper function to shuffle array
       const shuffleArray = (array: any[]) => {
@@ -167,6 +186,12 @@ export default function GamePage() {
       }
       console.log(`📊 Found ${pairs.length} image pairs`)
       
+      if (pairs.length === 0) {
+        console.error('❌ No image pairs found! Check your Supabase buckets.')
+        setLoading(false)
+        return
+      }
+      
       // Shuffle pairs and take only 5 questions
       for (let i = pairs.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1))
@@ -175,6 +200,13 @@ export default function GamePage() {
       
       // Take only first 5 questions
       const gameQuestions = pairs.slice(0, 5)
+      
+      if (gameQuestions.length === 0) {
+        console.error('❌ No game questions could be created!')
+        setLoading(false)
+        return
+      }
+      
       setQuestions(gameQuestions)
       setLoading(false)
       console.log(`✅ Game ready with ${gameQuestions.length} questions`)
@@ -301,11 +333,38 @@ export default function GamePage() {
   }
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-white text-2xl">Loading images...</div>
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-purple-900 to-yellow-800">
+        <div className="text-center">
+          <div className="text-white text-2xl mb-4">🔄 Loading images...</div>
+          <div className="text-yellow-400 text-sm">Fetching paintings from Supabase storage...</div>
+        </div>
+      </div>
+    )
   }
 
   if (!currentQ) {
-    return <div className="min-h-screen flex items-center justify-center text-white text-2xl">No more questions available.</div>
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-purple-900 to-yellow-800">
+        <Card className="bg-black/80 backdrop-blur-sm border-yellow-400/50 max-w-md">
+          <CardContent className="p-8 text-center">
+            <h2 className="text-2xl font-bold text-white mb-4">⚠️ No Questions Available</h2>
+            <p className="text-yellow-400 mb-4">Unable to load game images.</p>
+            <p className="text-gray-400 text-sm mb-6">Please check the browser console for details.</p>
+            <div className="space-y-3">
+              <Link href="/">
+                <Button className="w-full">
+                  Back to Home
+                </Button>
+              </Link>
+              <Button onClick={resetGame} variant="outline" className="w-full">
+                Try Again
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
   if (gameOver) {
@@ -413,6 +472,12 @@ export default function GamePage() {
                   width={400}
                   height={400}
                   className="w-full h-48 md:h-80 object-cover rounded-lg"
+                  onError={(e) => {
+                    const url = currentQ.realIsLeft ? currentQ.realImage : currentQ.fakeImage
+                    console.error('❌ Failed to load image:', url)
+                    setImageErrors(prev => new Set(prev).add(url))
+                  }}
+                  unoptimized
                 />
                 {showResult && selectedAnswer === "real" && isCorrect && (
                   <div className="absolute inset-0 bg-green-500/40 rounded-lg flex items-center justify-center">
@@ -450,6 +515,12 @@ export default function GamePage() {
                   width={400}
                   height={400}
                   className="w-full h-48 md:h-80 object-cover rounded-lg"
+                  onError={(e) => {
+                    const url = currentQ.realIsLeft ? currentQ.fakeImage : currentQ.realImage
+                    console.error('❌ Failed to load image:', url)
+                    setImageErrors(prev => new Set(prev).add(url))
+                  }}
+                  unoptimized
                 />
                 {showResult && selectedAnswer === "fake" && isCorrect && (
                   <div className="absolute inset-0 bg-green-500/40 rounded-lg flex items-center justify-center">

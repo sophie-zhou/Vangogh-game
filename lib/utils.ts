@@ -7,7 +7,11 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 // Supabase client setup
-export const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('⚠️ Supabase environment variables are not set!')
+}
+
+export const supabase = createClient(supabaseUrl || '', supabaseKey || '')
